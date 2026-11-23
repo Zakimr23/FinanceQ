@@ -30,6 +30,13 @@ jobs:
       - name: Susun Struktur Proyek Android
         run: |
           if [ -f "app.build.gradle" ] && [ ! -d "app/src/main" ]; then
+            for f in AndroidManifest.xml MainActivity.java index.html; do
+              if [ ! -f "$f" ]; then
+                echo "ERROR: File wajib '$f' tidak ditemukan di root repositori!"
+                exit 1
+              fi
+            done
+
             mkdir -p app/src/main/java/com/financeq/app
             mkdir -p app/src/main/assets
             mkdir -p app/src/main/res/values
@@ -40,11 +47,54 @@ jobs:
             mv MainActivity.java app/src/main/java/com/financeq/app/MainActivity.java
             mv index.html app/src/main/assets/index.html
             [ -f "strings.xml" ] && mv strings.xml app/src/main/res/values/strings.xml
+
             if [ -f "icon.png" ]; then
               cp icon.png app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
               cp icon.png app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
               rm -f icon.png
             fi
+          fi
+
+          # Buat settings.gradle jika belum ada
+          if [ ! -f "settings.gradle" ] && [ ! -f "settings.gradle.kts" ]; then
+            cat << 'EOF' > settings.gradle
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = "FinanceQ"
+          include ':app'
+          EOF
+          fi
+
+          # Buat root build.gradle jika belum ada (dan app/build.gradle tidak mencantumkan versi AGP)
+          if [ ! -f "build.gradle" ] && [ ! -f "build.gradle.kts" ]; then
+            if ! grep -Eq "com\.android\.application.*version" app/build.gradle; then
+              cat << 'EOF' > build.gradle
+          plugins {
+              id 'com.android.application' version '8.5.2' apply false
+          }
+          EOF
+            fi
+          fi
+
+          # Buat gradle.properties untuk AndroidX jika belum ada
+          if [ ! -f "gradle.properties" ]; then
+            cat << 'EOF' > gradle.properties
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.useAndroidX=true
+          android.enableJetifier=true
+          EOF
           fi
 
       - name: Build Debug APK
