@@ -1,1 +1,31 @@
-
+name: Build FinanceQ APK
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Susun struktur proyek
+        run: |
+          mkdir -p app/src/main/assets app/src/main/java/com/financeq/app app/src/main/res/values
+          mv index.html app/src/main/assets/
+          mv MainActivity.java app/src/main/java/com/financeq/app/
+          mv AndroidManifest.xml app/src/main/
+          mv strings.xml app/src/main/res/values/
+          mv app.build.gradle app/build.gradle
+          for s in mdpi:48 hdpi:72 xhdpi:96 xxhdpi:144 xxxhdpi:192; do
+            d=${s%%:*}; z=${s##*:}
+            mkdir -p app/src/main/res/mipmap-$d
+            convert icon.png -resize ${z}x${z} app/src/main/res/mipmap-$d/ic_launcher.png
+            cp app/src/main/res/mipmap-$d/ic_launcher.png app/src/main/res/mipmap-$d/ic_launcher_round.png
+          done
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: 8.7 }
+      - run: gradle assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FinanceQ-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          
