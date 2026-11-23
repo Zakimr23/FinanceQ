@@ -485,7 +485,7 @@
         },
         wallets: [
           { id: 'w_bca', name: 'Bank BCA', type: 'Bank', initialBalance: 3500000, color: '#3b82f6' },
-          { id: 'w_qris', name: 'GoPay / QRIS', type: 'E-Wallet', initialBalance: 450000, color: '#8b5cf6' },
+          { id: 'w_qris', name: 'Dana', type: 'E-Wallet', initialBalance: 450000, color: '#8b5cf6' },
           { id: 'w_cash', name: 'Dompet Tunai', type: 'Tunai', initialBalance: 300000, color: '#10b981' }
         ],
         transactions: [
@@ -2565,8 +2565,7 @@
         ].join(',');
       });
 
-      const csvContent = '﻿' + [headers.join(','), ...rows].join('
-');
+      const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\n');
       downloadFile(csvContent, `Laporan_FinanceQ_${getRelativeDate(0)}.csv`, 'text/csv;charset=utf-8;');
       showToast('File CSV berhasil diunduh');
     }
