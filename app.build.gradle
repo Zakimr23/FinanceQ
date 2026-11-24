@@ -1,9 +1,9 @@
 plugins { id 'com.android.application' }
 android {
-    namespace 'com.financeq.app'
+    namespace 'com.mywallet.app'
     compileSdk 34
     defaultConfig {
-        applicationId "com.financeq.app"
+        applicationId "com.mywallet.app"
         minSdk 24
         targetSdk 34
         versionCode 1
