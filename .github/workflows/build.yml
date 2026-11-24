@@ -37,7 +37,7 @@ jobs:
 
             mv app.build.gradle app/build.gradle
             mv AndroidManifest.xml app/src/main/AndroidManifest.xml
-            mv MainActivity.java app/src/main/java/com/financeq/app/MainActivity.java
+            mv MainActivity.java app/src/main/java/com/MyWallet/app/MainActivity.java
             mv index.html app/src/main/assets/index.html
             [ -f "strings.xml" ] && mv strings.xml app/src/main/res/values/strings.xml
             if [ -f "icon.png" ]; then
