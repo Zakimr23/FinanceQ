@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#059669" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>DompetKu — Pelacak Keuangan Pribadi</title>
+  <title>MyWallet — Pelacak Keuangan Pribadi</title>
 
   <!-- Google Fonts: Plus Jakarta Sans & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -76,7 +76,7 @@
           </svg>
         </div>
         <div>
-          <h1 id="headerTitle" class="text-base font-bold tracking-tight text-slate-900 dark:text-white leading-tight">DompetKu</h1>
+          <h1 id="headerTitle" class="text-base font-bold tracking-tight text-slate-900 dark:text-white leading-tight">MyWallet</h1>
           <p id="headerSubtitle" class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Kelola keuangan cerdas</p>
         </div>
       </div>
@@ -370,31 +370,15 @@
   <!-- ===================================================================== -->
   <script>
     /**
-     * DOMPETKU / FINANCEQ - PERSONAL FINANCE TRACKER
+     * MYWALLET - PERSONAL FINANCE TRACKER
      * Enhanced with:
      * 1. Pencatatan Berulang (Daily/Weekly/Monthly Recurring Transactions)
      * 2. Lampiran Foto / Struk (Compressed Image Attachment + Lightbox Viewer)
      * 3. Peringatan Penggunaan Anggaran > 75% dari Tabungan
      * 4. Pemindahan Saldo Tunai <-> Rekening + Biaya Admin
-     * 5. Pengingat Harian dengan Berbagai Macam Pesan
      */
 
     const STORAGE_KEY = 'dompetku_finance_v1';
-
-    const DAILY_REMINDER_MESSAGES = [
-      { tag: 'Jajan Harian', text: 'Sudah catat jajan hari ini? Pengeluaran kecil seperti kopi atau camilan Rp20rb bisa jadi Rp600rb sebulan kalau lupa dicatat!' },
-      { tag: 'Kontrol Tabungan', text: 'Cek dulu posisi tabunganmu sebelum belanja! Pastikan penggunaan anggaran tetap aman di bawah batas 75% dari tabungan.' },
-      { tag: 'Simpan Struk', text: 'Habis belanja atau bayar tagihan? Jangan lupa foto & lampirkan struknya di transaksi supaya bukti pengeluaran selalu rapi.' },
-      { tag: 'Dompet Tunai', text: 'Uang tunai di dompet sering cepat habis tanpa jejak. Yuk luangkan 30 detik buat catat transaksi tunai hari ini!' },
-      { tag: 'Nabung Dulu', text: 'Sisihkan tabungan di awal, bukan menunggu sisa belanja di akhir bulan. Yuk cek progres target tabunganmu hari ini!' },
-      { tag: 'Kebutuhan vs Keinginan', text: 'Sebelum checkout keranjang belanja, tanya diri sendiri: ini kebutuhan mendesak atau cuma keinginan sesaat?' },
-      { tag: 'Evaluasi Harian', text: 'Kebiasaan mencatat keuangan setiap malam bikin kamu lebih tenang dan terkendali menghadapi akhir bulan.' },
-      { tag: 'Pindah Saldo', text: 'Baru setor tunai ke rekening atau tarik tunai di ATM? Jangan lupa catat pemindahan saldonya beserta biaya adminnya.' },
-      { tag: 'Bebas Bocor Halus', text: 'Biaya admin transfer dan jajan receh adalah kebocoran halus paling umum. Pantau terus di FinanceQ!' },
-      { tag: 'Target Impian', text: 'Setiap Rp10.000 yang berhasil kamu hemat hari ini mendekatkanmu satu langkah ke target tabungan impianmu.' },
-      { tag: 'Cek Anggaran', text: 'Sudah masuk pertengahan bulan? Intip menu Anggaran untuk memastikan setiap kategori masih di zona hijau.' },
-      { tag: 'Disiplin Finansial', text: 'Keuangan sehat bukan soal seberapa besar penghasilanmu, tapi seberapa rapi kamu mencatat dan mengaturnya.' }
-    ];
 
     // Crisp inline SVG icon library
     const ICONS = {
@@ -418,7 +402,6 @@
       moon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`,
       eye: `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`,
       eyeOff: `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>`,
-      bell: `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path stroke-linecap="round" stroke-linejoin="round" d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>`,
       camera: `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`
     };
 
@@ -462,10 +445,7 @@
       return {
         settings: {
           darkMode: false,
-          hideBalance: false,
-          reminderEnabled: true,
-          reminderTime: '20:00',
-          reminderOffset: 0
+          hideBalance: false
         },
         wallets: [
           { id: 'w_bca', name: 'Bank BCA', type: 'Bank', initialBalance: 3500000, color: '#3b82f6' },
@@ -523,7 +503,7 @@
         }
         const parsed = JSON.parse(raw);
         return {
-          settings: Object.assign({ darkMode: false, hideBalance: false, reminderEnabled: true, reminderTime: '20:00', reminderOffset: 0 }, parsed.settings || {}),
+          settings: Object.assign({ darkMode: false, hideBalance: false }, parsed.settings || {}),
           wallets: Array.isArray(parsed.wallets) && parsed.wallets.length ? parsed.wallets : getDefaultSeedData().wallets,
           transactions: Array.isArray(parsed.transactions) ? parsed.transactions : [],
           recurring: Array.isArray(parsed.recurring) ? parsed.recurring : [],
@@ -592,45 +572,6 @@
         }, 500);
       }
     }
-
-    // =========================================================================
-    // FEATURE 5 ENGINE: DAILY REMINDER WITH VARIED MESSAGES
-    // =========================================================================
-    function getTodaysReminderMessage() {
-      const dayNum = Math.floor(Date.now() / 86400000);
-      const offset = Number(appState.settings.reminderOffset) || 0;
-      const idx = Math.abs(dayNum + offset) % DAILY_REMINDER_MESSAGES.length;
-      return DAILY_REMINDER_MESSAGES[idx];
-    }
-
-    function cycleReminderMessage() {
-      appState.settings.reminderOffset = (Number(appState.settings.reminderOffset) || 0) + 1;
-      saveState();
-      renderCurrentTab();
-    }
-
-    function triggerDailyNotificationIfNeeded(forceTest = false) {
-      if (!appState.settings.reminderEnabled && !forceTest) return;
-      const today = getRelativeDate(0);
-      const lastNotified = localStorage.getItem('financeq_last_notified_date');
-      const msg = getTodaysReminderMessage();
-
-      if (forceTest || lastNotified !== today) {
-        if (window.AndroidBridge && typeof window.AndroidBridge.showNotification === 'function') {
-          window.AndroidBridge.showNotification(`FinanceQ • ${msg.tag}`, msg.text);
-          localStorage.setItem('financeq_last_notified_date', today);
-        } else if ('Notification' in window) {
-          if (Notification.permission === 'granted') {
-            new Notification(`FinanceQ • ${msg.tag}`, { body: msg.text });
-            localStorage.setItem('financeq_last_notified_date', today);
-          } else if (Notification.permission !== 'denied') {
-            Notification.requestPermission();
-          }
-        }
-        if (forceTest) showToast('Notifikasi pengingat dikirim!');
-      }
-    }
-
     // =========================================================================
     // FEATURE 3 ENGINE: SAVINGS USAGE > 75% WARNING CHECKER
     // =========================================================================
@@ -798,11 +739,11 @@
       }
 
       const titles = {
-        dashboard: ['MyWallet', 'Ringkasan keuangan & pengingat'],
+        dashboard: ['MyWallet', 'Ringkasan keuangan cerdas'],
         history: ['Histori Transaksi', 'Catatan keluar, masuk & lampiran struk'],
         analytics: ['Grafik & Analisis', 'Visualisasi arus kas & kategori'],
         budget: ['Anggaran, Rutin & Target', 'Batas 75% tabungan, jadwal rutin & target'],
-        settings: ['Pengaturan & Laporan', 'Pengingat harian, dompet, CSV & backup']
+        settings: ['Pengaturan & Laporan', 'Kelola dompet, CSV & backup']
       };
       document.getElementById('headerTitle').textContent = titles[tab][0];
       document.getElementById('headerSubtitle').textContent = titles[tab][1];
@@ -831,7 +772,6 @@
       const walletBalances = getWalletBalances();
       const totalBalance = Object.values(walletBalances).reduce((acc, val) => acc + val, 0);
       const savingsAlert = getSavingsUsageStatus();
-      const reminder = getTodaysReminderMessage();
 
       const periodTxs = filterByPeriod(appState.transactions, dashboardPeriod);
       const totalIncome = periodTxs.filter(t => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0);
@@ -866,29 +806,6 @@
 
       const main = document.getElementById('mainContent');
       main.innerHTML = `
-        <!-- Daily Reminder Banner (Varied Messages) -->
-        ${appState.settings.reminderEnabled ? `
-          <section class="bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200/90 dark:border-amber-800/60 rounded-2xl p-3.5 shadow-xs">
-            <div class="flex items-start justify-between gap-2.5">
-              <div class="flex items-start gap-2.5">
-                <div class="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
-                  ${ICONS.bell}
-                </div>
-                <div>
-                  <div class="flex items-center gap-1.5 mb-0.5">
-                    <span class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300">
-                      Pengingat • ${reminder.tag}
-                    </span>
-                  </div>
-                  <p class="text-xs text-slate-700 dark:text-slate-200 leading-relaxed font-medium">${reminder.text}</p>
-                </div>
-              </div>
-              <button onclick="cycleReminderMessage()" title="Ganti pesan pengingat" class="px-2 py-1 rounded-lg bg-white/80 dark:bg-slate-800 text-[10px] font-bold text-amber-700 dark:text-amber-300 border border-amber-200/70 dark:border-amber-800 shrink-0 hover:bg-white transition">
-                Pesan Lain
-              </button>
-            </div>
-          </section>
-        ` : ''}
 
         <!-- Warning Alert: Penggunaan Anggaran > 75% dari Tabungan -->
         ${savingsAlert.isExceeded75 ? `
@@ -1715,36 +1632,9 @@
     // =========================================================================
     function renderSettings() {
       const walletBalances = getWalletBalances();
-      const reminder = getTodaysReminderMessage();
       const main = document.getElementById('mainContent');
 
       main.innerHTML = `
-        <!-- Daily Reminder Settings -->
-        <section class="bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 space-y-3">
-          <div class="flex items-center justify-between">
-            <div>
-              <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Pengingat Harian</h2>
-              <p class="text-sm font-bold text-slate-900 dark:text-white mt-0.5">Pesan Motivasi & Catat Rutin</p>
-            </div>
-            <button onclick="toggleReminderEnabled()" class="w-12 h-7 rounded-full p-1 transition-colors duration-200 ${appState.settings.reminderEnabled ? 'bg-emerald-600' : 'bg-slate-300'}">
-              <div class="w-5 h-5 rounded-full bg-white shadow-sm transform transition-transform duration-200 ${appState.settings.reminderEnabled ? 'translate-x-5' : 'translate-x-0'}"></div>
-            </button>
-          </div>
-
-          <div class="p-3 rounded-xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/50 text-xs text-slate-700 dark:text-slate-200">
-            <span class="font-bold text-amber-700 dark:text-amber-300 block mb-0.5">Contoh Pesan Hari Ini (${reminder.tag}):</span>
-            "${reminder.text}"
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <button onclick="cycleReminderMessage()" class="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 transition">
-              Acak Pesan Lain
-            </button>
-            <button onclick="triggerDailyNotificationIfNeeded(true)" class="py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-white text-xs font-bold transition">
-              Tes Notifikasi
-            </button>
-          </div>
-        </section>
 
         <!-- Appearance Card -->
         <section class="bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4">
@@ -1840,13 +1730,6 @@
           </button>
         </section>
       `;
-    }
-
-    function toggleReminderEnabled() {
-      appState.settings.reminderEnabled = !appState.settings.reminderEnabled;
-      saveState();
-      renderSettings();
-      showToast(appState.settings.reminderEnabled ? 'Pengingat harian diaktifkan' : 'Pengingat harian dimatikan');
     }
 
     // =========================================================================
@@ -2655,7 +2538,7 @@
       });
 
       const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\n');
-      saveFileSmart(csvContent, `Laporan_FinanceQ_${getRelativeDate(0)}.csv`, 'text/csv;charset=utf-8;');
+      saveFileSmart(csvContent, `Laporan_MyWallet_${getRelativeDate(0)}.csv`, 'text/csv;charset=utf-8;');
     }
 
     function backupDataJSON(includePhotos = true) {
@@ -2664,7 +2547,7 @@
         goals: appState.goals.map(g => Object.assign({}, g, { image: null }))
       });
       const jsonStr = JSON.stringify(data, null, includePhotos ? 0 : 2);
-      saveFileSmart(jsonStr, `Backup_FinanceQ_${getRelativeDate(0)}.json`, 'application/json', { isBackup: true });
+      saveFileSmart(jsonStr, `Backup_MyWallet_${getRelativeDate(0)}.json`, 'application/json', { isBackup: true });
     }
 
     function isAndroidWebView() {
@@ -2757,7 +2640,7 @@
     function shareExportText() {
       const ta = document.getElementById('exportTextArea');
       if (!ta || !navigator.share) return;
-      navigator.share({ title: 'FinanceQ', text: ta.value }).catch(() => {});
+      navigator.share({ title: 'MyWallet', text: ta.value }).catch(() => {});
     }
 
     function openRestorePasteModal() {
@@ -2805,7 +2688,7 @@
           }
           try { localStorage.setItem(STORAGE_KEY + '_prerestore', JSON.stringify(appState)); } catch (_) {}
           appState = {
-            settings: Object.assign({ darkMode: false, hideBalance: false, reminderEnabled: true, reminderTime: '20:00', reminderOffset: 0 }, parsed.settings || {}),
+            settings: Object.assign({ darkMode: false, hideBalance: false }, parsed.settings || {}),
             wallets: parsed.wallets,
             transactions: parsed.transactions,
             recurring: Array.isArray(parsed.recurring) ? parsed.recurring : [],
@@ -2857,7 +2740,7 @@
         () => {
           const keepDark = appState.settings.darkMode;
           appState = {
-            settings: { darkMode: keepDark, hideBalance: false, reminderEnabled: true, reminderTime: '20:00', reminderOffset: 0 },
+            settings: { darkMode: keepDark, hideBalance: false },
             wallets: [
               { id: 'w_cash', name: 'Dompet Tunai', type: 'Tunai', initialBalance: 0, color: '#10b981' },
               { id: 'w_bank', name: 'Rekening Bank', type: 'Bank', initialBalance: 0, color: '#3b82f6' }
@@ -2927,7 +2810,7 @@
     // =========================================================================
     // BAHASA / LANGUAGE (id | en) - terjemahan tampilan lewat kamus + observer
     // =========================================================================
-    const I18N_EN = {"+ Atur Anggaran": "+ Set Budget", "+ Buat Target": "+ New Goal", "+ Jadwal Rutin": "+ Recurring", "+ Kelola Dompet": "+ Manage Wallets", "+ Tambah": "+ Add", "+ Tambah Dana": "+ Add Funds", "+ Tambah Dompet": "+ Add Wallet", "+ Tambahkan ke Target": "+ Add to Goal", "5 Transaksi Terakhir": "Last 5 Transactions", "6 Bulan": "6 Months", "Acak Pesan Lain": "Another Message", "Anggaran": "Budget", "Anggaran Bulanan": "Monthly Budget", "Anggaran, Rutin & Target": "Budget, Recurring & Goals", "Apakah Anda yakin?": "Are you sure?", "Atur Anggaran Bulanan": "Set Monthly Budget", "Backup Semua Data (JSON)": "Backup All Data (JSON)", "Batal": "Cancel", "Batang": "Bar", "Batas 75% tabungan, jadwal rutin & target": "75% savings limit, recurring & goals", "Batas Anggaran per Bulan (Rp)": "Monthly Budget Limit (Rp)", "Batas pengeluaran kategori bulan ini": "Category spending limits this month", "Belanja": "Shopping", "Belum ada pemasukan": "No income yet", "Beranda": "Home", "Berhasil disimpan": "Saved", "Berikutnya": "Next", "Biaya Admin Pemindahan (Rp)": "Transfer Admin Fee (Rp)", "Biaya Admin:": "Admin Fee:", "Buat Target Tabungan": "New Savings Goal", "Edit Target Tabungan": "Edit Savings Goal", "Bulan Ini": "This Month", "Catat Berulang": "Recurring Entry", "Catatan": "Note", "Catatan keluar, masuk & lampiran struk": "Expenses, income & receipt attachments", "Contoh Pesan Hari Ini": "Today's Sample Message", "Dari Dompet Asal": "From Source Wallet", "Distribusi Pengeluaran": "Spending Distribution", "Dompet": "Wallet", "Dompet & Akun": "Wallets & Accounts", "Dompet Tujuan Transfer": "Destination Wallet", "Dompet Tunai": "Cash Wallet", "E-Wallet / QRIS": "E-Wallet / QRIS", "Edit": "Edit", "Export Laporan Transaksi (CSV / Excel)": "Export Transaction Report (CSV / Excel)", "Frekuensi": "Frequency", "Gaji": "Salary", "Gaji/Uang Saku": "Salary/Allowance", "Garis": "Line", "Grafik": "Charts", "Grafik & Analisis": "Charts & Analysis", "Hadiah": "Gifts", "Hapus": "Delete", "Hari Ini": "Today", "Hiburan": "Entertainment", "Histori": "History", "Histori Transaksi": "Transaction History", "Jadikan Pencatatan Berulang": "Make this a recurring entry", "Jajan Harian": "Daily Snacks", "Jeda": "Pause", "Jenis Akun": "Account Type", "Judul": "Title", "Kategori": "Category", "Kategori Pengeluaran": "Spending Categories", "Kelola Dompet & Akun": "Manage Wallets & Accounts", "Keluar": "Out", "Kemarin": "Yesterday", "Kesehatan": "Health", "Konfirmasi": "Confirm", "Lainnya": "Other", "Lampiran Foto / Struk (Opsional)": "Photo / Receipt Attachment (Optional)", "Lampiran Struk": "Receipt Attachment", "Lampirkan Foto / Struk": "Attach Photo / Receipt", "Laporan & Cadangan Data": "Reports & Data Backup", "Makanan & Minuman": "Food & Drinks", "Manajemen Data": "Data Management", "Masuk": "In", "Minggu Ini": "This Week", "Mode Gelap (Dark Mode)": "Dark Mode", "Muat Ulang Data Contoh (Demo)": "Reload Sample Data (Demo)", "Mulai Tanggal": "Start Date", "Nama / Keterangan Rutin": "Recurring Name / Description", "Nama Dompet / Bank": "Wallet / Bank Name", "Nama Target": "Goal Name", "Nominal (Rp)": "Amount (Rp)", "Nominal (Rupiah)": "Amount (Rupiah)", "Nominal Setoran Tabungan (Rp)": "Deposit Amount (Rp)", "Nominal Terkumpul Saat Ini (Rp)": "Amount Saved So Far (Rp)", "Nyaman di mata saat malam hari": "Easy on the eyes at night", "Otomatis dicatat sesuai jadwal (misal: jajan 20rb/hari)": "Recorded automatically on schedule (e.g. snacks 20k/day)", "Otomatis tercatat tiap hari/minggu/bulan": "Recorded automatically every day/week/month", "Pemasukan": "Income", "Pemasukan vs Pengeluaran": "Income vs Expenses", "Pencatatan Berulang": "Recurring Entries", "Pendidikan": "Education", "Pengaturan & Laporan": "Settings & Reports", "Pengeluaran": "Expenses", "Pengeluaran Terbesar": "Top Expense", "Pengingat Harian": "Daily Reminder", "Pengingat harian, dompet, CSV & backup": "Reminder, wallets, CSV & backup", "Perbandingan arus kas": "Cash flow comparison", "Pesan Lain": "Another", "Pesan Motivasi & Catat Rutin": "Motivation & Daily Logging", "Pilih Dompet / Akun": "Select Wallet / Account", "Pindah Saldo": "Move Balance", "Proporsi belanja berdasarkan kategori": "Spending share by category", "Rasio Tabungan": "Savings Ratio", "Reset / Hapus Semua Data": "Reset / Delete All Data", "Restore Data dari File Backup (.JSON)": "Restore Data from Backup File (.JSON)", "Restore dari Teks (Tempel Backup)": "Restore from Text (Paste Backup)", "Restore dari Teks": "Restore from Text", "Ringkasan keuangan & pengingat": "Finance summary & reminders", "Rutin": "Recurring", "Saldo Awal (Rp)": "Initial Balance (Rp)", "Saldo masuk ke": "Balance received by", "Saldo:": "Balance:", "Sangat Sehat": "Very Healthy", "Semua": "All", "Semua Dompet": "All Wallets", "Semua Kategori": "All Categories", "Semua Waktu": "All Time", "Setiap Bulan": "Every Month", "Setiap Bulan (Bulanan)": "Every Month (Monthly)", "Setiap Hari": "Every Day", "Setiap Hari (Harian)": "Every Day (Daily)", "Setiap Minggu": "Every Week", "Setiap Minggu (Mingguan)": "Every Week (Weekly)", "Simpan Anggaran": "Save Budget", "Simpan Dompet": "Save Wallet", "Simpan Jadwal Berulang": "Save Recurring Schedule", "Simpan Target Tabungan": "Save Savings Goal", "Simpan Transaksi": "Save Transaction", "Tagihan": "Bills", "Tambah Dompet / Akun Baru": "Add New Wallet / Account", "Tambah Pencatatan Berulang": "Add Recurring Entry", "Tambah Transaksi": "Add Transaction", "Tampilan Aplikasi": "App Appearance", "Tanggal": "Date", "Target Nominal (Rp)": "Target Amount (Rp)", "Target Tabungan": "Savings Goals", "Terkumpul": "Saved", "Terkumpul saat ini:": "Saved so far:", "Terpakai": "Used", "Tes Notifikasi": "Test Notification", "Total Pengeluaran": "Total Expenses", "Total Saldo Semua Dompet": "Total Balance of All Wallets", "Total Terpakai Bulan Ini": "Total Used This Month", "Total dipotong dari": "Total deducted from", "Transportasi": "Transport", "Tunai": "Cash", "Tunai ↔ Rekening + Admin": "Cash ↔ Bank + Admin", "Usaha": "Business", "Usaha/Sampingan": "Business/Side Income", "Visualisasi arus kas & kategori": "Cash flow & category visuals", "Warna Label": "Label Color", "Wujudkan impian finansial bertahap": "Reach your financial dreams step by step", "Ya, Lanjutkan": "Yes, Continue", "Tercapai!": "Achieved!", "Belum ada transaksi": "No transactions yet", "Tidak ada transaksi cocok": "No matching transactions", "Coba ubah kata kunci pencarian atau reset filter.": "Try a different keyword or reset the filters.", "Reset Filter": "Reset Filters", "Belum ada data": "No data yet", "Belum ada data pengeluaran pada periode ini.": "No spending data for this period.", "Belum ada target tabungan. Klik \"+ Buat Target\" untuk memulai.": "No savings goals yet. Tap \"+ New Goal\" to start.", "Belum ada anggaran kategori. Klik \"+ Atur Anggaran\" untuk mulai mengontrol pengeluaran.": "No category budgets yet. Tap \"+ Set Budget\" to start controlling spending.", "Belum ada pencatatan berulang. Contoh: Jajan harian Rp 20.000 otomatis tiap hari.": "No recurring entries yet. Example: daily snacks Rp 20,000 recorded automatically.", "Hari ini": "Today", "Hari": "Day", "Minggu": "Week", "Bulan": "Month", "Foto Barang yang Diinginkan (Opsional)": "Photo of the Item You Want (Optional)", "Pilih Foto Barang": "Choose Item Photo", "Ganti Foto": "Change Photo", "Hapus Foto": "Remove Photo", "Contoh: Dana Darurat / Beli Motor": "Example: Emergency Fund / Buy a Motorbike", "Contoh: Jajan Harian / Langganan WiFi": "Example: Daily Snacks / WiFi Subscription", "Contoh: Jajan harian": "Example: Daily snacks", "Cari catatan, kategori, nominal...": "Search notes, categories, amounts...", "Contoh: Bank Mandiri / OVO / Dana": "Example: Bank Mandiri / OVO / Dana", "Ganti Tema": "Toggle Theme", "Ganti pesan pengingat": "Change reminder message", "Pengaturan": "Settings", "Sembunyikan Saldo": "Hide Balance", "Anggaran bulanan disimpan": "Monthly budget saved", "Anggaran dihapus": "Budget deleted", "Batas anggaran harus lebih dari Rp 0": "Budget limit must be more than Rp 0", "Belum ada transaksi untuk diexport": "No transactions to export", "Data berhasil dipulihkan dari backup!": "Data restored from backup!", "Data contoh berhasil dimuat": "Sample data loaded", "Dompet asal dan tujuan tidak boleh sama": "Source and destination wallets must differ", "Dompet baru ditambahkan": "New wallet added", "Dompet dihapus": "Wallet deleted", "File JSON tidak valid atau rusak": "JSON file is invalid or corrupted", "Foto struk berhasil dilampirkan": "Receipt photo attached", "Gagal menyalin. Tekan lama teks lalu pilih Salin": "Copy failed. Long-press the text and choose Copy", "Hapus Anggaran?": "Delete Budget?", "Hapus Dompet?": "Delete Wallet?", "Hapus Jadwal Berulang?": "Delete Recurring Schedule?", "Hapus Target Tabungan?": "Delete Savings Goal?", "Hapus Transaksi?": "Delete Transaction?", "Izin clipboard ditolak, tempel manual di kotak": "Clipboard denied, paste manually in the box", "Jadwal berulang dihapus": "Recurring schedule deleted", "Jadwal pencatatan berulang disimpan": "Recurring schedule saved", "Kotak masih kosong": "The box is still empty", "Lengkapi nama dan nominal": "Fill in name and amount", "Lengkapi nama dan target nominal": "Fill in name and target amount", "Masukkan nominal lebih dari Rp 0": "Enter an amount above Rp 0", "Memori penuh! Coba hapus foto struk lama.": "Storage full! Try deleting old receipt photos.", "Muat Data Contoh?": "Load Sample Data?", "Notifikasi pengingat dikirim!": "Reminder notification sent!", "Pilih tujuan penyimpanan file": "Choose where to save the file", "Pulihkan dari Backup?": "Restore from Backup?", "Reset & Hapus Semua Data?": "Reset & Delete All Data?", "Semua data berhasil direset": "All data has been reset", "Target tabungan dihapus": "Savings goal deleted", "Target tabungan disimpan": "Savings goal saved", "Tekan lama di kotak lalu pilih Tempel": "Long-press the box and choose Paste", "Tersalin! Tempel & simpan di Catatan / WhatsApp": "Copied! Paste & save in Notes / WhatsApp", "Transaksi & jadwal berulang disimpan!": "Transaction & recurring schedule saved!", "Transaksi berhasil diperbarui": "Transaction updated", "Transaksi berhasil ditambahkan": "Transaction added", "Transaksi dihapus": "Transaction deleted", "Selamat! Target tabungan tercapai!": "Congrats! Savings goal reached!", "Dana berhasil ditambahkan ke target": "Funds added to goal", "Transaksi ini akan dihapus permanen dan saldo dompet akan disesuaikan otomatis.": "This transaction will be permanently deleted and wallet balances adjusted automatically.", "Data saat ini akan diganti dengan data contoh realistis untuk simulasi aplikasi.": "Current data will be replaced with realistic sample data for simulation.", "Seluruh transaksi, jadwal berulang, anggaran, target tabungan, dan saldo akan dikosongkan permanen.": "All transactions, recurring schedules, budgets, savings goals and balances will be permanently cleared.", "Data saat ini akan diganti dengan isi backup. Salinan data lama disimpan otomatis sebagai cadangan darurat.": "Current data will be replaced by the backup. A copy of the old data is kept as an emergency backup.", "Dompet ini akan dihapus beserta jadwal berulangnya. Transaksi lama tetap tersimpan di histori.": "This wallet and its recurring schedules will be deleted. Past transactions stay in history.", "Grafik belum bisa dimuat (library Chart.js belum tersedia offline).": "Charts can't load yet (Chart.js library isn't available offline).", "Pilih Foto": "Choose Photo"};
+    const I18N_EN = {"Ringkasan keuangan cerdas": "Smart finance summary", "Kelola dompet, CSV & backup": "Manage wallets, CSV & backup", "+ Atur Anggaran": "+ Set Budget", "+ Buat Target": "+ New Goal", "+ Jadwal Rutin": "+ Recurring", "+ Kelola Dompet": "+ Manage Wallets", "+ Tambah": "+ Add", "+ Tambah Dana": "+ Add Funds", "+ Tambah Dompet": "+ Add Wallet", "+ Tambahkan ke Target": "+ Add to Goal", "5 Transaksi Terakhir": "Last 5 Transactions", "6 Bulan": "6 Months", "Anggaran": "Budget", "Anggaran Bulanan": "Monthly Budget", "Anggaran, Rutin & Target": "Budget, Recurring & Goals", "Apakah Anda yakin?": "Are you sure?", "Atur Anggaran Bulanan": "Set Monthly Budget", "Backup Semua Data (JSON)": "Backup All Data (JSON)", "Batal": "Cancel", "Batang": "Bar", "Batas 75% tabungan, jadwal rutin & target": "75% savings limit, recurring & goals", "Batas Anggaran per Bulan (Rp)": "Monthly Budget Limit (Rp)", "Batas pengeluaran kategori bulan ini": "Category spending limits this month", "Belanja": "Shopping", "Belum ada pemasukan": "No income yet", "Beranda": "Home", "Berhasil disimpan": "Saved", "Berikutnya": "Next", "Biaya Admin Pemindahan (Rp)": "Transfer Admin Fee (Rp)", "Biaya Admin:": "Admin Fee:", "Buat Target Tabungan": "New Savings Goal", "Edit Target Tabungan": "Edit Savings Goal", "Bulan Ini": "This Month", "Catat Berulang": "Recurring Entry", "Catatan": "Note", "Catatan keluar, masuk & lampiran struk": "Expenses, income & receipt attachments", "Dari Dompet Asal": "From Source Wallet", "Distribusi Pengeluaran": "Spending Distribution", "Dompet": "Wallet", "Dompet & Akun": "Wallets & Accounts", "Dompet Tujuan Transfer": "Destination Wallet", "Dompet Tunai": "Cash Wallet", "E-Wallet / QRIS": "E-Wallet / QRIS", "Edit": "Edit", "Export Laporan Transaksi (CSV / Excel)": "Export Transaction Report (CSV / Excel)", "Frekuensi": "Frequency", "Gaji": "Salary", "Gaji/Uang Saku": "Salary/Allowance", "Garis": "Line", "Grafik": "Charts", "Grafik & Analisis": "Charts & Analysis", "Hadiah": "Gifts", "Hapus": "Delete", "Hari Ini": "Today", "Hiburan": "Entertainment", "Histori": "History", "Histori Transaksi": "Transaction History", "Jadikan Pencatatan Berulang": "Make this a recurring entry", "Jajan Harian": "Daily Snacks", "Jeda": "Pause", "Jenis Akun": "Account Type", "Judul": "Title", "Kategori": "Category", "Kategori Pengeluaran": "Spending Categories", "Kelola Dompet & Akun": "Manage Wallets & Accounts", "Keluar": "Out", "Kemarin": "Yesterday", "Kesehatan": "Health", "Konfirmasi": "Confirm", "Lainnya": "Other", "Lampiran Foto / Struk (Opsional)": "Photo / Receipt Attachment (Optional)", "Lampiran Struk": "Receipt Attachment", "Lampirkan Foto / Struk": "Attach Photo / Receipt", "Laporan & Cadangan Data": "Reports & Data Backup", "Makanan & Minuman": "Food & Drinks", "Manajemen Data": "Data Management", "Masuk": "In", "Minggu Ini": "This Week", "Mode Gelap (Dark Mode)": "Dark Mode", "Muat Ulang Data Contoh (Demo)": "Reload Sample Data (Demo)", "Mulai Tanggal": "Start Date", "Nama / Keterangan Rutin": "Recurring Name / Description", "Nama Dompet / Bank": "Wallet / Bank Name", "Nama Target": "Goal Name", "Nominal (Rp)": "Amount (Rp)", "Nominal (Rupiah)": "Amount (Rupiah)", "Nominal Setoran Tabungan (Rp)": "Deposit Amount (Rp)", "Nominal Terkumpul Saat Ini (Rp)": "Amount Saved So Far (Rp)", "Nyaman di mata saat malam hari": "Easy on the eyes at night", "Otomatis dicatat sesuai jadwal (misal: jajan 20rb/hari)": "Recorded automatically on schedule (e.g. snacks 20k/day)", "Otomatis tercatat tiap hari/minggu/bulan": "Recorded automatically every day/week/month", "Pemasukan": "Income", "Pemasukan vs Pengeluaran": "Income vs Expenses", "Pencatatan Berulang": "Recurring Entries", "Pendidikan": "Education", "Pengaturan & Laporan": "Settings & Reports", "Pengeluaran": "Expenses", "Pengeluaran Terbesar": "Top Expense", "Perbandingan arus kas": "Cash flow comparison", "Pilih Dompet / Akun": "Select Wallet / Account", "Pindah Saldo": "Move Balance", "Proporsi belanja berdasarkan kategori": "Spending share by category", "Rasio Tabungan": "Savings Ratio", "Reset / Hapus Semua Data": "Reset / Delete All Data", "Restore Data dari File Backup (.JSON)": "Restore Data from Backup File (.JSON)", "Restore dari Teks (Tempel Backup)": "Restore from Text (Paste Backup)", "Restore dari Teks": "Restore from Text", "Rutin": "Recurring", "Saldo Awal (Rp)": "Initial Balance (Rp)", "Saldo masuk ke": "Balance received by", "Saldo:": "Balance:", "Sangat Sehat": "Very Healthy", "Semua": "All", "Semua Dompet": "All Wallets", "Semua Kategori": "All Categories", "Semua Waktu": "All Time", "Setiap Bulan": "Every Month", "Setiap Bulan (Bulanan)": "Every Month (Monthly)", "Setiap Hari": "Every Day", "Setiap Hari (Harian)": "Every Day (Daily)", "Setiap Minggu": "Every Week", "Setiap Minggu (Mingguan)": "Every Week (Weekly)", "Simpan Anggaran": "Save Budget", "Simpan Dompet": "Save Wallet", "Simpan Jadwal Berulang": "Save Recurring Schedule", "Simpan Target Tabungan": "Save Savings Goal", "Simpan Transaksi": "Save Transaction", "Tagihan": "Bills", "Tambah Dompet / Akun Baru": "Add New Wallet / Account", "Tambah Pencatatan Berulang": "Add Recurring Entry", "Tambah Transaksi": "Add Transaction", "Tampilan Aplikasi": "App Appearance", "Tanggal": "Date", "Target Nominal (Rp)": "Target Amount (Rp)", "Target Tabungan": "Savings Goals", "Terkumpul": "Saved", "Terkumpul saat ini:": "Saved so far:", "Terpakai": "Used", "Total Pengeluaran": "Total Expenses", "Total Saldo Semua Dompet": "Total Balance of All Wallets", "Total Terpakai Bulan Ini": "Total Used This Month", "Total dipotong dari": "Total deducted from", "Transportasi": "Transport", "Tunai": "Cash", "Tunai ↔ Rekening + Admin": "Cash ↔ Bank + Admin", "Usaha": "Business", "Usaha/Sampingan": "Business/Side Income", "Visualisasi arus kas & kategori": "Cash flow & category visuals", "Warna Label": "Label Color", "Wujudkan impian finansial bertahap": "Reach your financial dreams step by step", "Ya, Lanjutkan": "Yes, Continue", "Tercapai!": "Achieved!", "Belum ada transaksi": "No transactions yet", "Tidak ada transaksi cocok": "No matching transactions", "Coba ubah kata kunci pencarian atau reset filter.": "Try a different keyword or reset the filters.", "Reset Filter": "Reset Filters", "Belum ada data": "No data yet", "Belum ada data pengeluaran pada periode ini.": "No spending data for this period.", "Belum ada target tabungan. Klik \"+ Buat Target\" untuk memulai.": "No savings goals yet. Tap \"+ New Goal\" to start.", "Belum ada anggaran kategori. Klik \"+ Atur Anggaran\" untuk mulai mengontrol pengeluaran.": "No category budgets yet. Tap \"+ Set Budget\" to start controlling spending.", "Belum ada pencatatan berulang. Contoh: Jajan harian Rp 20.000 otomatis tiap hari.": "No recurring entries yet. Example: daily snacks Rp 20,000 recorded automatically.", "Hari ini": "Today", "Hari": "Day", "Minggu": "Week", "Bulan": "Month", "Foto Barang yang Diinginkan (Opsional)": "Photo of the Item You Want (Optional)", "Pilih Foto Barang": "Choose Item Photo", "Ganti Foto": "Change Photo", "Hapus Foto": "Remove Photo", "Contoh: Dana Darurat / Beli Motor": "Example: Emergency Fund / Buy a Motorbike", "Contoh: Jajan Harian / Langganan WiFi": "Example: Daily Snacks / WiFi Subscription", "Contoh: Jajan harian": "Example: Daily snacks", "Cari catatan, kategori, nominal...": "Search notes, categories, amounts...", "Contoh: Bank Mandiri / OVO / Dana": "Example: Bank Mandiri / OVO / Dana", "Ganti Tema": "Toggle Theme", "Pengaturan": "Settings", "Sembunyikan Saldo": "Hide Balance", "Anggaran bulanan disimpan": "Monthly budget saved", "Anggaran dihapus": "Budget deleted", "Batas anggaran harus lebih dari Rp 0": "Budget limit must be more than Rp 0", "Belum ada transaksi untuk diexport": "No transactions to export", "Data berhasil dipulihkan dari backup!": "Data restored from backup!", "Data contoh berhasil dimuat": "Sample data loaded", "Dompet asal dan tujuan tidak boleh sama": "Source and destination wallets must differ", "Dompet baru ditambahkan": "New wallet added", "Dompet dihapus": "Wallet deleted", "File JSON tidak valid atau rusak": "JSON file is invalid or corrupted", "Foto struk berhasil dilampirkan": "Receipt photo attached", "Gagal menyalin. Tekan lama teks lalu pilih Salin": "Copy failed. Long-press the text and choose Copy", "Hapus Anggaran?": "Delete Budget?", "Hapus Dompet?": "Delete Wallet?", "Hapus Jadwal Berulang?": "Delete Recurring Schedule?", "Hapus Target Tabungan?": "Delete Savings Goal?", "Hapus Transaksi?": "Delete Transaction?", "Izin clipboard ditolak, tempel manual di kotak": "Clipboard denied, paste manually in the box", "Jadwal berulang dihapus": "Recurring schedule deleted", "Jadwal pencatatan berulang disimpan": "Recurring schedule saved", "Kotak masih kosong": "The box is still empty", "Lengkapi nama dan nominal": "Fill in name and amount", "Lengkapi nama dan target nominal": "Fill in name and target amount", "Masukkan nominal lebih dari Rp 0": "Enter an amount above Rp 0", "Memori penuh! Coba hapus foto struk lama.": "Storage full! Try deleting old receipt photos.", "Muat Data Contoh?": "Load Sample Data?", "Pilih tujuan penyimpanan file": "Choose where to save the file", "Pulihkan dari Backup?": "Restore from Backup?", "Reset & Hapus Semua Data?": "Reset & Delete All Data?", "Semua data berhasil direset": "All data has been reset", "Target tabungan dihapus": "Savings goal deleted", "Target tabungan disimpan": "Savings goal saved", "Tekan lama di kotak lalu pilih Tempel": "Long-press the box and choose Paste", "Tersalin! Tempel & simpan di Catatan / WhatsApp": "Copied! Paste & save in Notes / WhatsApp", "Transaksi & jadwal berulang disimpan!": "Transaction & recurring schedule saved!", "Transaksi berhasil diperbarui": "Transaction updated", "Transaksi berhasil ditambahkan": "Transaction added", "Transaksi dihapus": "Transaction deleted", "Selamat! Target tabungan tercapai!": "Congrats! Savings goal reached!", "Dana berhasil ditambahkan ke target": "Funds added to goal", "Transaksi ini akan dihapus permanen dan saldo dompet akan disesuaikan otomatis.": "This transaction will be permanently deleted and wallet balances adjusted automatically.", "Data saat ini akan diganti dengan data contoh realistis untuk simulasi aplikasi.": "Current data will be replaced with realistic sample data for simulation.", "Seluruh transaksi, jadwal berulang, anggaran, target tabungan, dan saldo akan dikosongkan permanen.": "All transactions, recurring schedules, budgets, savings goals and balances will be permanently cleared.", "Data saat ini akan diganti dengan isi backup. Salinan data lama disimpan otomatis sebagai cadangan darurat.": "Current data will be replaced by the backup. A copy of the old data is kept as an emergency backup.", "Dompet ini akan dihapus beserta jadwal berulangnya. Transaksi lama tetap tersimpan di histori.": "This wallet and its recurring schedules will be deleted. Past transactions stay in history.", "Grafik belum bisa dimuat (library Chart.js belum tersedia offline).": "Charts can't load yet (Chart.js library isn't available offline).", "Pilih Foto": "Choose Photo"};
     const I18N_RULES = [
       [/^(\d+) transaksi ditemukan$/, '$1 transactions found'],
       [/^(\d+) transaksi keluar$/, '$1 expense transactions'],
@@ -2984,7 +2867,7 @@
     function initI18n() {
       document.documentElement.lang = getLang();
       if (getLang() !== 'en') return;
-      document.title = 'FinanceQ \u2014 Personal Finance Tracker';
+      document.title = 'MyWallet \u2014 Personal Finance Tracker';
       translateTree(document.body);
       new MutationObserver(muts => {
         muts.forEach(m => {
@@ -3011,7 +2894,6 @@
       initI18n();
       applyTheme();
       processRecurringTransactions();
-      triggerDailyNotificationIfNeeded(false);
       switchTab('dashboard');
     });
   </script>

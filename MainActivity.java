@@ -1,10 +1,7 @@
-package com.financeq.app;
+package com.mywallet.app;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +18,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
-import android.app.Notification;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -34,13 +30,11 @@ public class MainActivity extends Activity {
     private static final int PERMISSION_REQUEST = 1002;
     private static final int SAVE_FILE_REQUEST = 1003;
     private String pendingSaveContent = null;
-    private static final String CHANNEL_ID = "financeq_reminders";
 
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         requestRuntimePermissions();
-        createNotificationChannel();
 
         web = new WebView(this);
         setContentView(web);
@@ -109,9 +103,6 @@ public class MainActivity extends Activity {
                 if (checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
                     perms.add(Manifest.permission.READ_MEDIA_IMAGES);
                 }
-                if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                    perms.add(Manifest.permission.POST_NOTIFICATIONS);
-                }
             } else {
                 if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     perms.add(Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -119,21 +110,6 @@ public class MainActivity extends Activity {
             }
             if (!perms.isEmpty()) {
                 requestPermissions(perms.toArray(new String[0]), PERMISSION_REQUEST);
-            }
-        }
-    }
-
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                CHANNEL_ID,
-                "Pengingat Harian FinanceQ",
-                NotificationManager.IMPORTANCE_DEFAULT
-            );
-            channel.setDescription("Pengingat pencatatan keuangan harian");
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            if (manager != null) {
-                manager.createNotificationChannel(channel);
             }
         }
     }
@@ -191,31 +167,6 @@ public class MainActivity extends Activity {
                     }
                 });
             }
-        }
-
-        @JavascriptInterface
-        public void showNotification(String title, String message) {
-            NotificationManager manager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-            if (manager == null) return;
-
-            Intent intent = new Intent(ctx, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            PendingIntent pi = PendingIntent.getActivity(
-                ctx, 0, intent,
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_IMMUTABLE : 0
-            );
-
-            Notification.Builder builder = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                ? new Notification.Builder(ctx, CHANNEL_ID)
-                : new Notification.Builder(ctx);
-
-            builder.setContentTitle(title)
-                .setContentText(message)
-                .setSmallIcon(android.R.drawable.ic_dialog_info)
-                .setContentIntent(pi)
-                .setAutoCancel(true);
-
-            manager.notify((int) (System.currentTimeMillis() % 10000), builder.build());
         }
     }
 
