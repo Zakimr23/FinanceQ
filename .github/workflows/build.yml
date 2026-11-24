@@ -30,7 +30,7 @@ jobs:
       - name: Susun Struktur Proyek Android
         run: |
           if [ -f "app.build.gradle" ] && [ ! -d "app/src/main" ]; then
-            mkdir -p app/src/main/java/com/financeq/app
+            mkdir -p app/src/main/java/com/MyWallet/app
             mkdir -p app/src/main/assets
             mkdir -p app/src/main/res/values
             mkdir -p app/src/main/res/mipmap-xxxhdpi
